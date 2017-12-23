@@ -35,18 +35,19 @@ export default class extends React.Component {
             }
         }
         this.setState(() => ({ cols, rows, board }));
-        setTimeout(this.start(board, cols, rows), 1000);
+        setTimeout(() => {
+            this.start(board, cols, rows);
+        }, 1000);
     }
 
     start(board, cols, rows) {
-        let timer = setInterval(
+        let timer = setInterval(() => {
             this.nextGridState(
                 this.state.board.length > 0 ? this.state.board : board,
                 this.state.cols > 0 ? this.state.cols : cols,
                 this.state.rows > 0 ? this.state.rows : rows
-            ),
-            this.state.interval
-        );
+            );
+        }, this.state.interval);
     }
 
     componentDidMount() {
@@ -95,8 +96,8 @@ export default class extends React.Component {
                     next[i][j] = state;
                 }
             }
+            console.log(i);
         }
-        console.log(next);
         this.setState(() => ({ board: next }));
     }
 
