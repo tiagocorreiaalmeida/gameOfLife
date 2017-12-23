@@ -1,0 +1,11 @@
+.cell {
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 1px solid #000;
+    &--alive {
+        background-color: #000;
+    }
+    &--dead {
+        background-color: #fff;
+    }
+}

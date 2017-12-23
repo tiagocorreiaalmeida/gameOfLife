@@ -4,7 +4,8 @@
     "description": "freeCodeCamp gameoflife",
     "main": "setup.js",
     "scripts": {
-        "dev-server": "webpack-dev-server"
+        "dev-server": "webpack-dev-server",
+        "build": "webpack"
     },
     "author": "Tiago Correia",
     "license": "ISC",
@@ -20,6 +21,11 @@
         "babel-preset-env": "^1.6.1",
         "babel-preset-es2015": "^6.24.1",
         "babel-preset-react": "^6.24.1",
-        "webpack-dev-server": "^2.9.7"
+        "webpack-dev-server": "^2.9.7",
+        "css-loader": "^0.28.7",
+        "node-sass": "^4.7.2",
+        "sass-loader": "^6.0.6",
+        "style-loader": "^0.19.0",
+        "normalize.css": "^7.0.0"
     }
 }
