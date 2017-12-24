@@ -42,6 +42,7 @@ export default class extends React.Component {
 
     start(board, cols, rows) {
         let timer = setInterval(() => {
+            console.log("SetInterval");
             this.nextGridState(
                 this.state.board.length > 0 ? this.state.board : board,
                 this.state.cols > 0 ? this.state.cols : cols,
@@ -84,6 +85,7 @@ export default class extends React.Component {
 
     nextGridState(grid, cols, rows) {
         let next = grid;
+        console.log("nextGridState");
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
                 let state = grid[i][j];
@@ -96,8 +98,11 @@ export default class extends React.Component {
                     next[i][j] = state;
                 }
             }
-            console.log(i);
+            if (i + 1 == cols) {
+                console.log("loop ended");
+            }
         }
+        console.log("set grid");
         this.setState(() => ({ board: next }));
     }
 
