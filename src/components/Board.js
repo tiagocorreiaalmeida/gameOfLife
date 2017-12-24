@@ -8,7 +8,7 @@ export default class extends React.Component {
             <table>
                 <tbody>
                     {this.props.board.map((ele, index) => (
-                        <BoardRow key={ele + index} rows={ele} />
+                        <BoardRow key={'row ' + index} rows={ele} x={index}/>
                     ))}
                 </tbody>
             </table>
