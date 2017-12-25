@@ -7,7 +7,12 @@ export default class extends React.Component {
             <tr>
                 {this.props.rows.map((cell, index) => {
                     let state = cell > 0 ? "cell--alive" : "cell--dead";
-                    return <td className={"cell " + state} key={index} />;
+                    return (
+                        <td
+                            className={"cell " + state}
+                            key={this.props.x + "-" + index}
+                        />
+                    );
                 })}
             </tr>
         );

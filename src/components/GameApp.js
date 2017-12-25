@@ -3,9 +3,13 @@ import ReactDOM from "react-dom";
 import Board from "./Board";
 
 const createBoard = (cols, rows) => {
-    let arr = new Array(cols);
-    for (let i = 0; i < arr.length; i++) {
-        arr[i] = new Array(rows);
+    let arr = [];
+
+    for (let i = 0; i < cols; i++) {
+        arr[i] = [];
+        for (let j = 0; j < rows; j++) {
+            arr[i][j] = 0;
+        }
     }
     return arr;
 };
@@ -14,16 +18,20 @@ export default class extends React.Component {
     constructor(props) {
         super(props);
         this.setUpGrid = this.setUpGrid.bind(this);
-        this.setSmallScreen = this.setSmallScreen.bind(this);
-        this.setMediumScreen = this.setMediumScreen.bind(this);
-        this.setBigScreen = this.setBigScreen.bind(this);
+        this.changeGrid = this.changeGrid.bind(this);
         this.nextGridState = this.nextGridState.bind(this);
-
+        this.getNeighbours = this.getNeighbours.bind(this);
+        this.start = this.start.bind(this);
+        this.controller = this.controller.bind(this);
+        this.clear = this.clear.bind(this);
+        this.play = this.play.bind(this);
         this.state = {
-            board: [],
+            board: null,
             cols: 30,
             rows: 45,
-            interval: 1000
+            interval: "normal",
+            count: 0,
+            pause: false
         };
     }
 
@@ -34,98 +42,181 @@ export default class extends React.Component {
                 board[i][j] = Math.round(Math.random(2));
             }
         }
-        this.setState(() => ({ cols, rows, board }));
-        setTimeout(() => {
-            this.start(board, cols, rows);
-        }, 1000);
+        this.setState({
+            cols,
+            rows,
+            board: JSON.parse(JSON.stringify(board)),
+            count: 0
+        });
     }
 
-    start(board, cols, rows) {
-        let timer = setInterval(() => {
-            console.log("SetInterval");
+    start(interval) {
+        let intervalIn = interval ? interval : this.state.interval;
+        let timer;
+        if (this.state.count === 0) {
+            this.setUpGrid(this.state.cols, this.state.rows);
+        }
+
+        clearInterval(this.timerID);
+
+        switch (intervalIn) {
+            case "slow":
+                timer = 3000;
+                break;
+            case "normal":
+                timer = 200;
+                break;
+            case "fast":
+                timer = 5;
+                break;
+        }
+        this.timerID = setInterval(() => {
             this.nextGridState(
-                this.state.board.length > 0 ? this.state.board : board,
-                this.state.cols > 0 ? this.state.cols : cols,
-                this.state.rows > 0 ? this.state.rows : rows
+                this.state.board,
+                this.state.cols,
+                this.state.rows
             );
-        }, this.state.interval);
+            if (this.state.board && this.state.board.length > 0) {
+                this.setState((prevState, props) => ({
+                    count: prevState.count + 1
+                }));
+            }
+        }, timer);
+    }
+
+    clear() {
+        clearInterval(this.timerID);
+        this.setState(() => ({
+            board: createBoard(this.state.cols, this.state.rows),
+            count: 0,
+            pause: false
+        }));
     }
 
     componentDidMount() {
-        this.setUpGrid(30, 45);
-    }
-
-    setSmallScreen() {
-        this.setUpGrid(30, 45);
-    }
-
-    setMediumScreen() {
-        this.setUpGrid(45, 60);
-    }
-
-    setBigScreen() {
-        this.setUpGrid(60, 80);
-    }
-
-    changeInterval(time) {
-        let interval;
-        switch (time) {
-            case "slow":
-                interval = 2000;
-                break;
-            case "normal":
-                interval = 1000;
-                break;
-            case "fast":
-                interval = 500;
-                break;
+        if (!this.state.board) {
+            this.setUpGrid(30, 45);
+            this.start();
         }
+    }
+
+    changeGrid(size) {
+        switch (size) {
+            case "small":
+                this.setUpGrid(30, 45);
+                break;
+            case "medium":
+                this.setUpGrid(45, 60);
+                break;
+            case "big":
+                this.setUpGrid(60, 80);
+        }
+        this.start();
+    }
+
+    changeInterval(interval) {
         this.setState(() => ({ interval }));
+        this.start(interval);
+    }
+
+    play() {
+        this.start();
     }
 
     nextGridState(grid, cols, rows) {
-        let next = grid;
-        console.log("nextGridState");
+        let next = JSON.parse(JSON.stringify(grid));
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
                 let state = grid[i][j];
-                let neighbors = this.countNeighbors(grid, cols, rows, i, j);
-                if (state == 0 && neighbors == 3) {
-                    next[i][j] = 1;
-                } else if (state == 1 && (neighbors < 2 || neighbors > 3)) {
-                    next[i][j] == 0;
-                } else {
-                    next[i][j] = state;
+                let neighbors = this.getNeighbours(i, j, grid).reduce(
+                    (a, b) => a + b
+                );
+
+                switch (state) {
+                    case 1:
+                        if (neighbors < 2) {
+                            next[i][j] = 0;
+                        }
+                        if (neighbors > 3) {
+                            next[i][j] = 0;
+                        }
+                        break;
+                    case 0:
+                        if (neighbors === 3) {
+                            next[i][j] = 1;
+                        }
+                        break;
+                    default:
                 }
             }
-            if (i + 1 == cols) {
-                console.log("loop ended");
-            }
         }
-        console.log("set grid");
-        this.setState(() => ({ board: next }));
+        this.setState({ board: next });
     }
 
-    countNeighbors(grid, cols, rows, x, y) {
-        let sum = 0;
+    getNeighbours(row, col, array) {
+        let neighbours = [];
         for (let i = -1; i < 2; i++) {
             for (let j = -1; j < 2; j++) {
-                let col = (x + i + cols) % cols;
-                let row = (y + i + rows) % rows;
-                sum += grid[col][row];
+                let newI = row + i;
+                let newJ = col + j;
+                if (
+                    newI >= 0 &&
+                    newJ >= 0 &&
+                    (newI < array.length && newJ < array[0].length) &&
+                    (i !== 0 || j !== 0)
+                ) {
+                    neighbours.push(array[newI][newJ]);
+                }
             }
         }
-        sum -= grid[x][y];
-        return sum;
+        return neighbours;
+    }
+
+    controller() {
+        this.state.pause ? this.start() : clearInterval(this.timerID);
+        this.setState((prevState, props) => ({
+            pause: !prevState.pause
+        }));
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
     }
 
     render() {
         return (
             <div>
                 <h1>Game of life</h1>
-                <button onClick={this.setSmallScreen}>Size: 45x30</button>
-                <button onClick={this.setMediumScreen}>Size: 60x45</button>
-                <button onClick={this.setBigScreen}>Size: 60x45</button>
+                <button onClick={this.play} disabled={this.state.count > 0}>
+                    Play
+                </button>
+                <button
+                    onClick={this.controller}
+                    disabled={!this.state.count > 0}
+                >
+                    {this.state.pause ? "Resume" : "Pause"}
+                </button>
+                <button
+                    onClick={() => {
+                        this.changeGrid("small");
+                    }}
+                >
+                    Size: 45x30
+                </button>
+                <button
+                    onClick={() => {
+                        this.changeGrid("medium");
+                    }}
+                >
+                    Size: 60x45
+                </button>
+                <button
+                    onClick={() => {
+                        this.changeGrid("big");
+                    }}
+                >
+                    Size: 60x45
+                </button>
                 <button
                     onClick={() => {
                         this.changeInterval("slow");
@@ -147,7 +238,9 @@ export default class extends React.Component {
                 >
                     Fast{" "}
                 </button>
-                <Board board={this.state.board} />
+                <button onClick={this.clear}>Clear</button>
+                <p>{this.state.count}</p>
+                {this.state.board && <Board board={this.state.board} />}
             </div>
         );
     }
