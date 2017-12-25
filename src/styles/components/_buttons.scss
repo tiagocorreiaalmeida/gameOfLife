@@ -1,0 +1,22 @@
+.btn {
+    outline: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin: 0.5rem;
+    border: none;
+    &--dark {
+        background-color: $color-grey-dark-2;
+        color: #fff;
+        border-radius: 0.5rem;
+        &--active {
+            background-color: $color-green-light;
+            .btn__icon {
+                color: $color-grey-dark-2;
+            }
+        }
+    }
+
+    &__icon {
+        color: $color-green-light;
+    }
+}

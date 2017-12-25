@@ -1,0 +1,24 @@
+.header {
+    background: $color-grey-dark;
+    padding: 1rem;
+    color: #fff;
+    margin-bottom: 3rem;
+    &__container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    &__social {
+        display: flex;
+        &__link {
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 5px;
+            color: inherit;
+            font-size: 2.2rem;
+            &:hover {
+                color: $color-grey-light;
+            }
+        }
+    }
+}

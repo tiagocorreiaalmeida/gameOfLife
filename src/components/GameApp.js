@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Board from "./Board";
+import Header from "./Header";
 
 const createBoard = (cols, rows) => {
     let arr = [];
@@ -115,7 +116,7 @@ export default class extends React.Component {
 
     changeInterval(interval) {
         this.setState(
-            () => ({ interval }),
+            () => ({ interval, pause: false }),
             () => {
                 this.start();
             }
@@ -154,7 +155,7 @@ export default class extends React.Component {
             }
         }
         if (JSON.stringify(grid) === JSON.stringify(next)) {
-            clearInterval(this.interval);
+            clearInterval(this.timerID);
         }
         this.setState({ board: next });
     }
@@ -192,60 +193,98 @@ export default class extends React.Component {
     render() {
         return (
             <div>
-                <h1>Game of life</h1>
-                <button onClick={this.play} disabled={this.state.count > 0}>
-                    Play
-                </button>
-                <button
-                    onClick={this.controller}
-                    disabled={!this.state.count > 0}
-                >
-                    {this.state.pause ? "Resume" : "Pause"}
-                </button>
-                <button
-                    onClick={() => {
-                        this.changeGrid("small");
-                    }}
-                >
-                    Size: 45x30
-                </button>
-                <button
-                    onClick={() => {
-                        this.changeGrid("medium");
-                    }}
-                >
-                    Size: 60x40
-                </button>
-                <button
-                    onClick={() => {
-                        this.changeGrid("big");
-                    }}
-                >
-                    Size: 80x55
-                </button>
-                <button
-                    onClick={() => {
-                        this.changeInterval("slow");
-                    }}
-                >
-                    Slow{" "}
-                </button>
-                <button
-                    onClick={() => {
-                        this.changeInterval("normal");
-                    }}
-                >
-                    Normal{" "}
-                </button>
-                <button
-                    onClick={() => {
-                        this.changeInterval("fast");
-                    }}
-                >
-                    Fast{" "}
-                </button>
-                <button onClick={this.clear}>Clear</button>
-                <p>{this.state.count}</p>
+                <Header />
+                <div className="container text-center">
+                    <h2 className="title__secondary">Controllers</h2>
+                    {this.state.count > 0 ? (
+                        <button
+                            onClick={this.controller}
+                            className="btn btn--dark"
+                        >
+                            {this.state.pause ? "Resume" : "Pause"}
+                        </button>
+                    ) : (
+                        <button onClick={this.play} className="btn btn--dark">
+                            Play
+                        </button>
+                    )}
+                    <button
+                        onClick={() => {
+                            this.changeGrid("small");
+                        }}
+                        className={
+                            this.state.cols == 30
+                                ? "btn btn--dark btn--dark--active"
+                                : "btn btn--dark"
+                        }
+                    >
+                        <i className="ion-monitor btn__icon" /> 45x30
+                    </button>
+                    <button
+                        onClick={() => {
+                            this.changeGrid("medium");
+                        }}
+                        className={
+                            this.state.cols == 40
+                                ? "btn btn--dark btn--dark--active"
+                                : "btn btn--dark"
+                        }
+                    >
+                        <i className="ion-monitor btn__icon" /> 60x40
+                    </button>
+                    <button
+                        onClick={() => {
+                            this.changeGrid("big");
+                        }}
+                        className={
+                            this.state.cols == 55
+                                ? "btn btn--dark btn--dark--active"
+                                : "btn btn--dark"
+                        }
+                    >
+                        <i className="ion-monitor btn__icon" /> 80x55
+                    </button>
+                    <button
+                        onClick={() => {
+                            this.changeInterval("slow");
+                        }}
+                        className={
+                            this.state.interval === "slow"
+                                ? "btn btn--dark btn--dark--active"
+                                : "btn btn--dark"
+                        }
+                    >
+                        <i className="ion-speedometer btn__icon" /> Slow{" "}
+                    </button>
+                    <button
+                        onClick={() => {
+                            this.changeInterval("normal");
+                        }}
+                        className={
+                            this.state.interval === "normal"
+                                ? "btn btn--dark btn--dark--active"
+                                : "btn btn--dark"
+                        }
+                    >
+                        <i className="ion-speedometer btn__icon" /> Normal{" "}
+                    </button>
+                    <button
+                        onClick={() => {
+                            this.changeInterval("fast");
+                        }}
+                        className={
+                            this.state.interval === "fast"
+                                ? "btn btn--dark btn--dark--active"
+                                : "btn btn--dark"
+                        }
+                    >
+                        <i className="ion-speedometer btn__icon" /> Fast{" "}
+                    </button>
+                    <button onClick={this.clear} className="btn btn--dark">
+                        Clear
+                    </button>
+                    <p className="counter">Generations: {this.state.count}</p>
+                </div>
                 {this.state.board && <Board board={this.state.board} />}
             </div>
         );

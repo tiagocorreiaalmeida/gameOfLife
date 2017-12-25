@@ -1,11 +1,15 @@
-.cell {
-    width: 0.8rem;
-    height: 0.8rem;
-    border: 1px solid #000;
-    &--alive {
-        background-color: #000;
+.board {
+    background-color: $color-light;
+    padding: 3rem 1rem;
+    &__table {
+        margin: 0 auto;
     }
-    &--dead {
-        background-color: #fff;
+}
+.cell {
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid $color-grey-dark;
+    &--alive {
+        background-color: #ff7109;
     }
 }
