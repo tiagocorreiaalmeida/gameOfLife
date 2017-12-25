@@ -50,8 +50,7 @@ export default class extends React.Component {
         });
     }
 
-    start(interval) {
-        let intervalIn = interval ? interval : this.state.interval;
+    start() {
         let timer;
         if (this.state.count === 0) {
             this.setUpGrid(this.state.cols, this.state.rows);
@@ -59,15 +58,15 @@ export default class extends React.Component {
 
         clearInterval(this.timerID);
 
-        switch (intervalIn) {
+        switch (this.state.interval) {
             case "slow":
-                timer = 3000;
+                timer = 1000;
                 break;
             case "normal":
                 timer = 200;
                 break;
             case "fast":
-                timer = 5;
+                timer = 1;
                 break;
         }
         this.timerID = setInterval(() => {
@@ -106,17 +105,21 @@ export default class extends React.Component {
                 this.setUpGrid(30, 45);
                 break;
             case "medium":
-                this.setUpGrid(45, 60);
+                this.setUpGrid(40, 60);
                 break;
             case "big":
-                this.setUpGrid(60, 80);
+                this.setUpGrid(55, 80);
         }
         this.start();
     }
 
     changeInterval(interval) {
-        this.setState(() => ({ interval }));
-        this.start(interval);
+        this.setState(
+            () => ({ interval }),
+            () => {
+                this.start();
+            }
+        );
     }
 
     play() {
@@ -149,6 +152,9 @@ export default class extends React.Component {
                     default:
                 }
             }
+        }
+        if (JSON.stringify(grid) === JSON.stringify(next)) {
+            clearInterval(this.interval);
         }
         this.setState({ board: next });
     }
@@ -208,14 +214,14 @@ export default class extends React.Component {
                         this.changeGrid("medium");
                     }}
                 >
-                    Size: 60x45
+                    Size: 60x40
                 </button>
                 <button
                     onClick={() => {
                         this.changeGrid("big");
                     }}
                 >
-                    Size: 60x45
+                    Size: 80x55
                 </button>
                 <button
                     onClick={() => {
