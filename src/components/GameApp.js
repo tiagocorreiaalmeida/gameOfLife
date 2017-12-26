@@ -36,7 +36,9 @@ export default class extends React.Component {
         };
     }
 
-    setUpGrid(cols, rows) {
+    setUpGrid() {
+        let cols = this.state.cols;
+        let rows = this.state.rows;
         let board = createBoard(cols, rows);
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
@@ -44,18 +46,15 @@ export default class extends React.Component {
             }
         }
         this.setState({
-            cols,
-            rows,
             board: JSON.parse(JSON.stringify(board)),
             count: 0
+        },()=>{
+          this.start();
         });
-    }
+    }    
 
     start() {
         let timer;
-        if (this.state.count === 0) {
-            this.setUpGrid(this.state.cols, this.state.rows);
-        }
 
         clearInterval(this.timerID);
 
@@ -95,36 +94,47 @@ export default class extends React.Component {
 
     componentDidMount() {
         if (!this.state.board) {
-            this.setUpGrid(30, 45);
-            this.start();
+            this.setUpGrid();
         }
     }
 
     changeGrid(size) {
+      let cols = 0;
+      let rows = 0;
         switch (size) {
             case "small":
-                this.setUpGrid(30, 45);
+                cols = 30;
+                rows = 45;
                 break;
             case "medium":
-                this.setUpGrid(40, 60);
+                cols = 40;
+                rows = 60;
                 break;
             case "big":
-                this.setUpGrid(55, 80);
+                cols = 55;
+                rows = 80;
         }
-        this.start();
+        this.setState(()=>({
+          cols,rows,pause:false
+        }),()=>{
+          this.setUpGrid();
+        });
     }
 
     changeInterval(interval) {
+      if(this.state.count === 0){
+        this.setUpGrid();
+      }
         this.setState(
             () => ({ interval, pause: false }),
             () => {
-                this.start();
+                this.start(); 
             }
-        );
+        ); 
     }
 
     play() {
-        this.start();
+        this.setUpGrid();
     }
 
     nextGridState(grid, cols, rows) {
@@ -160,7 +170,7 @@ export default class extends React.Component {
         this.setState({ board: next });
     }
 
-    getNeighbours(row, col, array) {
+ getNeighbours(row, col, array) {
         let neighbours = [];
         for (let i = -1; i < 2; i++) {
             for (let j = -1; j < 2; j++) {
