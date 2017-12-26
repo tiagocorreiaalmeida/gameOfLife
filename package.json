@@ -4,6 +4,7 @@
     "description": "freeCodeCamp gameoflife",
     "main": "setup.js",
     "scripts": {
+        "start": "webpack-dev-server --public tiagocorreia-gameoflife.glitch.me:8080",
         "dev-server": "webpack-dev-server",
         "build": "webpack",
         "compile:sass": "node-sass src/styles/main.scss css/style.comp.css",
@@ -34,6 +35,7 @@
         "postcss-cli": "^4.1.1",
         "sass-loader": "^6.0.6",
         "style-loader": "^0.19.0",
-        "webpack-dev-server": "^2.9.7"
+        "webpack-dev-server": "^2.9.7",
+        "normalize.css": "7.0.0"  
     }
 }
